@@ -1,0 +1,92 @@
+---
+title: "Animation with gganimate package"
+author: "Mir Afzal"
+date: "today"
+format: 
+    pdf:
+      documentclass: scrartcl
+      papersize: letter 
+---
+
+# Life Expectancy over the years across the Continents 
+
+```{r setup, warning = FALSE, message = FALSE}
+#Install Packages
+library(ggplot2) # for graphics
+library(gganimate) # for moving animation
+theme_set(theme_bw())
+library(gapminder)
+library(tinytex)
+library(dplyr)
+head(gapminder)
+library(magick)
+
+```
+```{r}
+# Life Expectancy over the Years in Continents 
+```{r}
+library(ggplot2)
+library(gganimate)
+theme_set(theme_bw())
+library(gapminder)
+head(gapminder)
+library(tinytex)
+```
+
+```{r}
+plot4 = gapminder %>% ggplot(
+  aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)
+) +
+  ggtitle("Life Expectancy vs GDP per Capita by Country") +
+  labs(x = "GDP Per Capita", 
+       y = "Life Expectancy", 
+       color = "Continent",
+       caption = "Source: Hans Rosling's gapminder data on health and wealth") +
+  geom_point(show.legend = FALSE, alpha = 0.7) +
+  #scale_color_viridis_d() 
+  scale_color_manual(values = country_colors)+
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  #labelling
+  labs(x = "GDP per capita", y = "Life expectancy") 
+  
+#movement of the time
+  plot4 + transition_time(year) +
+    #time frame
+  labs(title = "Year: {frame_time}") +
+    #shadowing the movement
+    shadow_wake(wake_length = 0.1, alpha = FALSE) +
+    #marking the shadow
+    shadow_mark(alpha = 0.3, size = 0.5) + 
+    #making frames
+    facet_wrap(~continent) +
+    view_follow(fixed_y = TRUE) + 
+    ease_aes('linear')
+```
+
+```{r}
+plot1 = gapminder %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent, size = pop)) + 
+  geom_point(alpha = 0.7, stroke = 0) + 
+  theme_fivethirtyeight() +
+  scale_size(range = c(2, 12), guide = "none") + 
+  scale_x_log10() + 
+  
+  #labelling
+  labs(title = "Life Expectancy vs GDP per Capita by Country",
+       x = "GDP Per Capita", 
+       y = "Life Expectancy", 
+       color = "Continent",
+       caption = "Source: Hans Rosling's gapminder data on health and wealth") + 
+  #theme
+  theme(axis.title = element_text(), 
+        text = element_text(family = "serif"), 
+        legend.text = element_text(size = 10)) + 
+  scale_color_brewer(palette = "Set2")
+
+plot1.animate = plot1 + 
+  transition_time(year) + 
+  labs(subtitle = "Year: {frame_time}")
+plot1.animate
+```
+
